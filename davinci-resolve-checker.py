@@ -4,8 +4,9 @@ import distro
 import subprocess
 import re
 import pylspci
+import pickle
 
-print("DaVinci Resolve checker", "1.6.2") # When bumping, do not forget to also bump it in readme.
+print("DaVinci Resolve checker", "1.6.2_pull17") # When bumping, do not forget to also bump it in readme.
 
 if distro.id() not in {"arch", "manjaro", "endeavouros"}:
     print("You are running", distro.name(), "(", distro.id(), ") but this script was not tested on it.")
@@ -21,8 +22,10 @@ chassis_type = m.group(1)
 installed_opencl_drivers = subprocess.check_output("expac -Qs '%n' opencl-driver", shell=True, text=True).splitlines()
 installed_opencl_nvidia_package = subprocess.run("expac -Qs '%n' opencl-nvidia", shell=True, capture_output=True, text=True).stdout.rstrip('\n')
 
-from pylspci.parsers import VerboseParser
-lspci_devices = VerboseParser().run()
+# from pylspci.parsers import VerboseParser
+# lspci_devices = VerboseParser().run()
+with open("lspci_devices_dump.txt", "rb") as fp:   # Unpickling
+    lspci_devices = pickle.load(fp)
 
 print("Chassis type: " + chassis_type)
 print("Installed OpenCL drivers: " + " ".join([str(x) for x in installed_opencl_drivers]))
